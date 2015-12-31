@@ -21,7 +21,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    ZGActionSheet *actionSheet = [[ZGActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"other1",@"other2",@"other3",@"other4",@"other5" ,nil];
+    ZGActionSheet *actionSheet = [[ZGActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"cancel" destructiveButtonTitle:nil otherButtonTitles:@"other1",@"other2",@"other3" ,nil];
     self.actionSheet = actionSheet;
     
 }

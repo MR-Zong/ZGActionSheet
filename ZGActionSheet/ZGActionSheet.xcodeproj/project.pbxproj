@@ -15,7 +15,7 @@
 		EFC13A981C33A9D10088CE6D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EFC13A961C33A9D10088CE6D /* LaunchScreen.storyboard */; };
 		EFC13AA31C33A9D10088CE6D /* ZGActionSheetTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EFC13AA21C33A9D10088CE6D /* ZGActionSheetTests.m */; };
 		EFC13AAE1C33A9D10088CE6D /* ZGActionSheetUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = EFC13AAD1C33A9D10088CE6D /* ZGActionSheetUITests.m */; };
-		EFC13ACA1C33F8B50088CE6D /* ZGActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = EFC13AC91C33F8B50088CE6D /* ZGActionSheet.m */; };
+		EFFDB72F1C34C3C400579B9B /* ZGActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = EFFDB72E1C34C3C400579B9B /* ZGActionSheet.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,8 +52,8 @@
 		EFC13AA91C33A9D10088CE6D /* ZGActionSheetUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZGActionSheetUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFC13AAD1C33A9D10088CE6D /* ZGActionSheetUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZGActionSheetUITests.m; sourceTree = "<group>"; };
 		EFC13AAF1C33A9D10088CE6D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		EFC13AC81C33F8B50088CE6D /* ZGActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZGActionSheet.h; sourceTree = "<group>"; };
-		EFC13AC91C33F8B50088CE6D /* ZGActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZGActionSheet.m; sourceTree = "<group>"; };
+		EFFDB72D1C34C3C400579B9B /* ZGActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZGActionSheet.h; sourceTree = "<group>"; };
+		EFFDB72E1C34C3C400579B9B /* ZGActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZGActionSheet.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -171,8 +171,8 @@
 		EFC13ABE1C33AA0B0088CE6D /* View */ = {
 			isa = PBXGroup;
 			children = (
-				EFC13AC81C33F8B50088CE6D /* ZGActionSheet.h */,
-				EFC13AC91C33F8B50088CE6D /* ZGActionSheet.m */,
+				EFFDB72D1C34C3C400579B9B /* ZGActionSheet.h */,
+				EFFDB72E1C34C3C400579B9B /* ZGActionSheet.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -309,7 +309,7 @@
 			files = (
 				EFC13A901C33A9D10088CE6D /* ViewController.m in Sources */,
 				EFC13A8D1C33A9D10088CE6D /* AppDelegate.m in Sources */,
-				EFC13ACA1C33F8B50088CE6D /* ZGActionSheet.m in Sources */,
+				EFFDB72F1C34C3C400579B9B /* ZGActionSheet.m in Sources */,
 				EFC13A8A1C33A9D10088CE6D /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -538,6 +538,7 @@
 				EFC13AB41C33A9D10088CE6D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		EFC13AB51C33A9D10088CE6D /* Build configuration list for PBXNativeTarget "ZGActionSheetTests" */ = {
 			isa = XCConfigurationList;
@@ -546,6 +547,7 @@
 				EFC13AB71C33A9D10088CE6D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		EFC13AB81C33A9D10088CE6D /* Build configuration list for PBXNativeTarget "ZGActionSheetUITests" */ = {
 			isa = XCConfigurationList;
@@ -554,6 +556,7 @@
 				EFC13ABA1C33A9D10088CE6D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

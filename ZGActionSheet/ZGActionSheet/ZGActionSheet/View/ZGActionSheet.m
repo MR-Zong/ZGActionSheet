@@ -33,6 +33,8 @@ static const CGFloat KTitleHeight = 64;
 
 @property (nonatomic,assign) BOOL isShow;
 
+@property (nonatomic,assign) CGFloat offsetY;
+
 
 
 @end
@@ -47,12 +49,6 @@ static const CGFloat KTitleHeight = 64;
     UIButton *cancelButton;
     UIButton *destructiveButton;
     
-    if (cancelButtonTitle) {
-        cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [cancelButton setTitle:cancelButtonTitle forState:UIControlStateNormal];
-        [cancelButton setTitleColor:[UIColor greenColor] forState:UIControlStateNormal];
-        [buttonsAry addObject:cancelButton];
-    }
     
     if (destructiveButtonTitle) {
         destructiveButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -93,6 +89,14 @@ static const CGFloat KTitleHeight = 64;
         }
     }
     
+    
+    
+    if (cancelButtonTitle) {
+        cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [cancelButton setTitle:cancelButtonTitle forState:UIControlStateNormal];
+        [cancelButton setTitleColor:[UIColor greenColor] forState:UIControlStateNormal];
+        [buttonsAry addObject:cancelButton];
+    }
     
     CGFloat height = kButtonHeight * buttonsAry.count;
     if (title) {
@@ -149,7 +153,6 @@ static const CGFloat KTitleHeight = 64;
         self.layer.masksToBounds = YES;
         self.layer.borderWidth = 1.0;
         self.layer.borderColor = [UIColor lightGrayColor].CGColor;
-        self.backgroundColor = [UIColor redColor];
         [self initView];
     }
     
@@ -177,11 +180,11 @@ static const CGFloat KTitleHeight = 64;
         }
         
     }
+    
     [view addSubview:self];
     self.isShow = YES;
-    
+    [self setOffsetYWithView:view];
     [UIView animateWithDuration:0.25 animations:^{
-        
         CGRect tmpFrame = self.frame;
         tmpFrame.origin.y -= self.frame.size.height;
         self.frame = tmpFrame;
@@ -222,6 +225,24 @@ static const CGFloat KTitleHeight = 64;
     return _title;
 }
 
+- (void)setOffsetYWithView:(UIView *)view
+{
+    if (!_offsetY) {
+        CGPoint point = [view convertPoint:view.frame.origin toView:view.window];
+        self.offsetY = point.y;
+    }
+}
+
+- (void)setOffsetY:(CGFloat)offsetY
+{
+    if (!_offsetY) {
+        CGRect tmpFrame = self.frame;
+        tmpFrame.origin.y -= offsetY;
+        self.frame = tmpFrame;
+    }
+    
+    _offsetY = offsetY;
+}
 
 #pragma mark - buttonClick:
 - (void)buttonClick:(UIButton *)btn
