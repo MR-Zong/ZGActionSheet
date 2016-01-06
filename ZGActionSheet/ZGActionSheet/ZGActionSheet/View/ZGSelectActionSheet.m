@@ -1,31 +1,63 @@
 //
-//  ZGActionSheet.m
+//  ZGSelectActionSheet.m
 //  ZGActionSheet
 //
-//  Created by Zong on 15/12/30.
-//  Copyright © 2015年 Zong. All rights reserved.
+//  Created by Zong on 16/1/5.
+//  Copyright © 2016年 Zong. All rights reserved.
 //
 
-#import "ZGActionSheet.h"
+#import "ZGSelectActionSheet.h"
+
+
+
+#pragma mark - ZGSelectItemButton
+@interface ZGSelectItemButton : UIButton
+
+@end
+
+static const CGFloat margin = 10;
+
+@implementation ZGSelectItemButton
+
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    
+    CGRect tmpImageViewFrame = self.imageView.frame;
+    tmpImageViewFrame.origin.x = self.frame.size.width - self.imageView.frame.size.width - margin;
+    self.imageView.frame = tmpImageViewFrame;
+    
+    CGRect tmpTitleLabelFrame = self.titleLabel.frame;
+    tmpTitleLabelFrame.origin.x = margin;
+    self.titleLabel.frame = tmpTitleLabelFrame;
+    
+}
+
+@end
+
+
 
 #define kUIScreenHeight [UIScreen mainScreen].bounds.size.height
 #define kUIScreenWidth [UIScreen mainScreen].bounds.size.width
 
 static const CGFloat kMargin = 10;
-static const CGFloat kButtonHeight = 64;
+static const CGFloat kButtonHeight = 44;
 static const CGFloat KTitleHeight = 64;
+static const NSString *selectedIndicatorImageName = @"clinic_done";
 
-@interface ZGActionSheet () <UITableViewDataSource,UITableViewDelegate>
+
+
+@interface ZGSelectActionSheet () <UITableViewDataSource,UITableViewDelegate>
 
 @property (nonatomic,weak) UITableView *tableView;
 
-@property (nonatomic,weak) NSString *title;
+@property (nonatomic,copy) NSString *title;
 
 @property (nonatomic,weak) UIButton *cancelButton;
 
-@property (nonatomic,weak) UIButton *destructiveButton;
-
-@property (nonatomic,strong) NSArray *otherButtons;
+@property (nonatomic,weak) UIButton *confirmButton;
 
 @property (nonatomic,strong) NSArray *buttonsAry;
 
@@ -37,42 +69,36 @@ static const CGFloat KTitleHeight = 64;
 
 @property (nonatomic,strong) UIView *maskView;
 
-
+@property (nonatomic,weak) ZGSelectItemButton *curSelectButton;
 
 @end
 
-@implementation ZGActionSheet
+@implementation ZGSelectActionSheet
 
-- (instancetype)initWithTitle:(NSString *)title delegate:(id<ZGActionSheetDelegate>)delegate cancelButtonTitle:(NSString *)cancelButtonTitle destructiveButtonTitle:(NSString *)destructiveButtonTitle otherButtonTitles:(NSString *)otherButtonTitles, ...
+- (instancetype)initWithTitle:(NSString *)title delegate:(id<ZGSelectActionSheetDelegate>)delegate selectedType:(ZGSelectActionSheetSelectedType)ZGSelectActionSheetSelectedType cancelButtonTitle:(NSString *)cancelButtonTitle confirmButtonTitle:(NSString *)confirmButtonTitle itemButtonTitles:(NSString *)itemButtonTitles, ...
 {
     
     NSMutableArray *buttonsAry = [NSMutableArray array];
     NSMutableArray *argsArray = [NSMutableArray array];
     UIButton *cancelButton;
-    UIButton *destructiveButton;
-    
-    
-    if (destructiveButtonTitle) {
-        destructiveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [destructiveButton setTitle:destructiveButtonTitle forState:UIControlStateNormal];
-        [destructiveButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-        [buttonsAry addObject:destructiveButton];
-    }
+    UIButton *confirmButton;
     
     // 获取可变参数
-    if (otherButtonTitles) {
+    if (itemButtonTitles) {
         
         va_list params; //定义一个指向个数可变的参数列表指针;
-        va_start(params,otherButtonTitles);//va_start 得到第一个可变参数地址,
+        va_start(params,itemButtonTitles);//va_start 得到第一个可变参数地址,
         id arg;
-        if (otherButtonTitles) {
+        if (itemButtonTitles) {
             //将第一个参数添加到array
-            id prev = otherButtonTitles;
+            id prev = itemButtonTitles;
             [argsArray addObject:prev];
-            UIButton *btn1 = [UIButton buttonWithType:UIButtonTypeCustom];
-            [btn1 setTitle:prev forState:UIControlStateNormal];
-            [btn1 setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-            [buttonsAry addObject:btn1];
+            ZGSelectItemButton *itemButton = [ZGSelectItemButton buttonWithType:UIButtonTypeCustom];
+            [itemButton setTitle:prev forState:UIControlStateNormal];
+            [itemButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [itemButton setImage:[UIImage imageNamed:selectedIndicatorImageName] forState:UIControlStateNormal];
+            itemButton.imageView.hidden = YES;
+            [buttonsAry addObject:itemButton];
             
             //va_arg 指向下一个参数地址
             //这里是问题的所在 网上的例子，没有保存第一个参数地址，后边循环，指针将不会在指向第一个参数
@@ -80,10 +106,10 @@ static const CGFloat KTitleHeight = 64;
             {
                 if ( arg ){
                     [argsArray addObject:arg];
-                    UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-                    [btn setTitle:arg forState:UIControlStateNormal];
-                    [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-                    [buttonsAry addObject:btn];
+                    ZGSelectItemButton *itemButton = [ZGSelectItemButton buttonWithType:UIButtonTypeCustom];
+                    [itemButton setTitle:arg forState:UIControlStateNormal];
+                    [itemButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+                    [buttonsAry addObject:itemButton];
                 }
             }
             //置空
@@ -92,13 +118,23 @@ static const CGFloat KTitleHeight = 64;
     }
     
     
-    
-    if (cancelButtonTitle) {
-        cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [cancelButton setTitle:cancelButtonTitle forState:UIControlStateNormal];
-        [cancelButton setTitleColor:[UIColor greenColor] forState:UIControlStateNormal];
-        [buttonsAry addObject:cancelButton];
+    NSString *defaultConfimButtonTitle = @"确认";
+    if (confirmButtonTitle) {
+        defaultConfimButtonTitle = confirmButtonTitle;
     }
+    confirmButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [confirmButton setTitle:defaultConfimButtonTitle forState:UIControlStateNormal];
+    [confirmButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+    [buttonsAry addObject:confirmButton];
+    
+    NSString *defaultCancelButtonTitle = @"取消";
+    if (cancelButtonTitle) {
+        defaultConfimButtonTitle = cancelButtonTitle;
+    }
+    cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [cancelButton setTitle:defaultCancelButtonTitle forState:UIControlStateNormal];
+    [cancelButton setTitleColor:[UIColor greenColor] forState:UIControlStateNormal];
+    [buttonsAry addObject:cancelButton];
     
     CGFloat height = kButtonHeight * buttonsAry.count;
     if (title) {
@@ -106,45 +142,47 @@ static const CGFloat KTitleHeight = 64;
     }
     CGRect frame = CGRectMake(kMargin, kUIScreenHeight, kUIScreenWidth - 2*kMargin, height);
     
-    return  [[self class] actionSheetTitleLabel:title delegate:delegate cancelButton:cancelButton destructiveButton:destructiveButton buttonsAry:[buttonsAry copy] argsAry:[argsArray copy] Frame:frame];
-
+    return  [[self class] selectActionSheetTitleLabel:title delegate:delegate cancelButton:cancelButton confirmButton:confirmButton buttonsAry:[buttonsAry copy] argsAry:[argsArray copy] Frame:frame];
 }
 
 
-+ (instancetype)actionSheetTitleLabel:(NSString *)title delegate:(id <ZGActionSheetDelegate>)delegate cancelButton:(UIButton *)cancelButton destructiveButton:(UIButton *)destructiveButton buttonsAry:(NSArray *)buttonsAry argsAry:(NSArray *)argsAry Frame:(CGRect)frame
++ (instancetype)selectActionSheetTitleLabel:(NSString *)title delegate:(id <ZGSelectActionSheetDelegate>)delegate cancelButton:(UIButton *)cancelButton confirmButton:(UIButton *)confirmButton buttonsAry:(NSArray *)buttonsAry argsAry:(NSArray *)argsAry Frame:(CGRect)frame
 {
- 
-    ZGActionSheet *actionSheet = [[self alloc] initWithFrame:frame];
-
+    
+    ZGSelectActionSheet *selectActionSheet = [[self alloc] initWithFrame:frame];
+    
     if (title) {
-        actionSheet.title = title;
+        selectActionSheet.title = title;
     }
     
     if (delegate) {
-        actionSheet.delegate = delegate;
+        selectActionSheet.delegate = delegate;
     }
     
     if (cancelButton) {
-        actionSheet.cancelButton = cancelButton;
+        selectActionSheet.cancelButton = cancelButton;
     }
     
-    if (destructiveButton) {
-        actionSheet.destructiveButton = destructiveButton;
+    if (confirmButton) {
+        selectActionSheet.confirmButton = confirmButton;
     }
     
     if (buttonsAry) {
-        actionSheet.buttonsAry = buttonsAry;
-        for (UIButton *btn in actionSheet.buttonsAry) {
-            [btn addTarget:actionSheet action:@selector(buttonClick:) forControlEvents:UIControlEventTouchUpInside];
+        selectActionSheet.buttonsAry = buttonsAry;
+        for (int i=0; i<buttonsAry.count; i++) {
+            ZGSelectItemButton *btn = buttonsAry[i];
+            [btn addTarget:selectActionSheet action:@selector(buttonClick:) forControlEvents:UIControlEventTouchUpInside];
+            if (i == 0) {
+                selectActionSheet.curSelectButton = btn;
+            }
         }
     }
     
     if (argsAry) {
-        actionSheet.argsArray =  argsAry;
+        selectActionSheet.argsArray =  argsAry;
     }
-    return actionSheet;
+    return selectActionSheet;
 }
-
 
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -157,7 +195,6 @@ static const CGFloat KTitleHeight = 64;
         self.layer.borderColor = [UIColor lightGrayColor].CGColor;
         [self initView];
     }
-    
     return self;
 }
 
@@ -170,7 +207,7 @@ static const CGFloat KTitleHeight = 64;
     maskView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapMaskView)];
     [maskView addGestureRecognizer:tap];
-
+    
     
     // tableView
     UITableView *tableView = [[UITableView alloc] initWithFrame:self.bounds style:UITableViewStylePlain];
@@ -181,23 +218,21 @@ static const CGFloat KTitleHeight = 64;
     [self addSubview:self.tableView];
 }
 
-
 - (void)showInView:(UIView *)view
 {
     for (UIView *subView in view.subviews) {
-        if( [subView isKindOfClass:[ZGActionSheet class]] )
+        if( [subView isKindOfClass:[ZGSelectActionSheet class]] )
         {
             return;
         }
         
     }
-    
     [view endEditing:YES];
     self.maskView.frame = view.window.bounds;
     [view.window addSubview:self.maskView];
     [view.window addSubview:self];
     self.isShow = YES;
-//    [self setOffsetYWithView:view];
+    //    [self setOffsetYWithView:view];
     [UIView animateWithDuration:0.25 animations:^{
         CGRect tmpFrame = self.frame;
         tmpFrame.origin.y -= self.frame.size.height;
@@ -205,6 +240,7 @@ static const CGFloat KTitleHeight = 64;
         
     }];
 }
+
 
 - (void)dismissWithClickedButtonIndex:(NSInteger)buttonIndex animated:(BOOL)animated completedBlock:(void (^)(void))completedBlock
 {
@@ -232,58 +268,32 @@ static const CGFloat KTitleHeight = 64;
     
 }
 
-- (NSInteger)addView:(UIView *)view frame:(CGRect)viewFrame
-{
-    
-    return 0;
-}
 
-- (NSInteger)numberOfButtons
-{
-    return self.buttonsAry.count;
-}
-
-- (NSString *)title
-{
-    return _title;
-}
-
-- (void)setOffsetYWithView:(UIView *)view
-{
-    if (!_offsetY) {
-        CGPoint point = [view convertPoint:view.frame.origin toView:view.window];
-        self.offsetY = point.y;
-    }
-}
-
-- (void)setOffsetY:(CGFloat)offsetY
-{
-    if (!_offsetY) {
-        CGRect tmpFrame = self.frame;
-        tmpFrame.origin.y -= offsetY;
-        self.frame = tmpFrame;
-    }
-    
-    _offsetY = offsetY;
-}
 
 #pragma mark - buttonClick:
-- (void)buttonClick:(UIButton *)btn
+- (void)buttonClick:(ZGSelectItemButton *)btn
 {
     NSInteger index  = [self.buttonsAry indexOfObject:btn];
-    [self dismissWithClickedButtonIndex:index animated:YES completedBlock:^{
-        
-        if (self.delegate && [self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:button:)]) {
-            [self.delegate actionSheet:self clickedButtonAtIndex:index button:self.buttonsAry[index]];
+    if (btn == self.confirmButton) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(selectActionSheet:selectItemTitle:selectIndex:)]) {
+            [self.delegate selectActionSheet:self selectItemTitle:[self.curSelectButton titleForState:UIControlStateNormal] selectIndex:[self.buttonsAry indexOfObject:self.curSelectButton]];
         }
-    }];
+        
+    }
+    if (index > (self.buttonsAry.count - 3) ) {
+        [self dismissWithClickedButtonIndex:index animated:YES completedBlock:nil];
+    }else {
+        [self.curSelectButton setImage:nil forState:UIControlStateNormal];
+        self.curSelectButton = btn;
+        [self.curSelectButton setImage:[UIImage imageNamed:selectedIndicatorImageName] forState:UIControlStateNormal];
+    }
 }
 
 #pragma mark - tapMaskView
 - (void)tapMaskView
 {
-    [self dismissWithClickedButtonIndex:0 animated:YES];
-
+    [self dismissWithClickedButtonIndex:0 animated:YES completedBlock:nil];
+    
 }
 
 #pragma mark - <UITableViewDataSource,UITableViewDelegate>
@@ -346,3 +356,4 @@ static const CGFloat KTitleHeight = 64;
 
 
 @end
+

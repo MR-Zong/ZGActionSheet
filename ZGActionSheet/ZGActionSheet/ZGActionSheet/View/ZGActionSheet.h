@@ -25,8 +25,9 @@
 - (nullable UIButton *)buttonAtIndex:(NSInteger)buttonIndex;
 
 - (NSInteger)numberOfButtons;
-- (NSString *)title;
+- (nullable NSString *)title;
 
+- (NSInteger)addView:(nonnull UIView *)view frame:(CGRect)viewFrame;
 - (void)showInView:(nullable UIView *)view;
 - (void)dismissWithClickedButtonIndex:(NSInteger)buttonIndex animated:(BOOL)animated;
 
