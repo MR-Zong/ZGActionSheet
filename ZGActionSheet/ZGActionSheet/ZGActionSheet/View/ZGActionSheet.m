@@ -282,7 +282,7 @@ static const CGFloat KTitleHeight = 64;
 #pragma mark - tapMaskView
 - (void)tapMaskView
 {
-    [self dismissWithClickedButtonIndex:0 animated:YES];
+    [self dismissWithClickedButtonIndex:0 animated:YES completedBlock:nil];
 
 }
 

@@ -24,18 +24,18 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-//    ZGActionSheet *actionSheet = [[ZGActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"cancel" destructiveButtonTitle:nil otherButtonTitles:@"other1",@"other2",@"other3" ,nil];
-//    self.actionSheet = actionSheet;
+    ZGActionSheet *actionSheet = [[ZGActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"cancel" destructiveButtonTitle:nil otherButtonTitles:@"other1",@"other2",@"other3" ,nil];
+    self.actionSheet = actionSheet;
     
-    ZGSelectActionSheet *reportActionSheet = [[ZGSelectActionSheet alloc] initWithTitle:@"选择举报的原因" delegate:self selectedType:ZGSelectActionSheetSelectedTypeDefault cancelButtonTitle:@"取消" confirmButtonTitle:@"举报" itemButtonTitles:@"选择一",@"选择二",@"选择三",@"选择四", nil];
-    self.reportActionSheet = reportActionSheet;
+//    ZGSelectActionSheet *reportActionSheet = [[ZGSelectActionSheet alloc] initWithTitle:@"选择举报的原因" delegate:self selectedType:ZGSelectActionSheetSelectedTypeDefault cancelButtonTitle:@"取消" confirmButtonTitle:@"举报" itemButtonTitles:@"选择一",@"选择二",@"选择三",@"选择四", nil];
+//    self.reportActionSheet = reportActionSheet;
 
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-//    [self.actionSheet showInView:self.view];
-    [self.reportActionSheet showInView:self.view];
+    [self.actionSheet showInView:self.view];
+//    [self.reportActionSheet showInView:self.view];
 }
 
 #pragma mark - <ZGSelectActionSheetDelegate>

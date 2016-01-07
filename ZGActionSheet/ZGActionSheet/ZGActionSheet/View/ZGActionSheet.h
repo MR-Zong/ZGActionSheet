@@ -29,7 +29,7 @@
 
 - (NSInteger)addView:(nonnull UIView *)view frame:(CGRect)viewFrame;
 - (void)showInView:(nullable UIView *)view;
-- (void)dismissWithClickedButtonIndex:(NSInteger)buttonIndex animated:(BOOL)animated;
+- (void)dismissWithClickedButtonIndex:(NSInteger)buttonIndex animated:(BOOL)animated completedBlock:(void (^)(void))completedBlock;
 
 @property (nonatomic,weak) id <ZGActionSheetDelegate> delegate;
 
